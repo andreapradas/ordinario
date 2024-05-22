@@ -13,10 +13,15 @@ public class DBManager : MonoBehaviour
     public static DBManager Instance { get; private set; }
     private string dbUri = "URI=file:mydb.sqlite";
     private string SQL_COUNT_ELEMNTS = "SELECT count(*) FROM Posiciones;";
-    private string SQL_CREATE_POSICIONES = "CREATE TABLE ...";
-
+    private string SQL_CREATE_POSICIONES = "CREATE TABLE IF NOT EXISTS Posiciones ("+
+                                            "Name STRING NOT NULL , "+
+                                            "Timestamp REAL, "+
+                                            "PosicionX REAL, " +
+                                            "PosicionY REAL, " +
+                                            "Posicionz REAL);";
     private IDbConnection dbConnection;
-
+    private string[] NAMES = { "Andrea", "Veronica", "Lucia", "Carmen" };
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +35,7 @@ public class DBManager : MonoBehaviour
         }
 
         OpenDatabase();
-        //InitializeDB();
+        InitializeDB();
     }
 
     private void OpenDatabase()
@@ -51,8 +56,19 @@ public class DBManager : MonoBehaviour
 
     public void SavePosition(CharacterPosition position)
     {
-        string command = "INSERT INTO ...";
+        float positionX = position.position.x;
+        float positionY = position.position.y;
+        float positionZ = position.position.z;
+        string command = "INSERT INTO Posiciones (Name, PosicionX, PosicionY, PosicionZ) VALUES ";
         IDbCommand dbCommand = dbConnection.CreateCommand();
+        System.Random rnd = new System.Random();
+      
+       
+        string nombre = NAMES[rnd.Next(NAMES.Length)];
+        command += $"('{nombre}','{positionX}', '{positionY}','{positionZ}'),";
+        
+        command = command.Remove(command.Length - 1, 1);
+        command += ";";
         dbCommand.CommandText = command;
         dbCommand.ExecuteNonQuery();
     }

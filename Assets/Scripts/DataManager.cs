@@ -22,16 +22,6 @@ public class DataManager : MonoBehaviour
         prevSaveTime = prevTime;
         playerPos = new Positions();
         enemyPos = new Positions();
-
-        //Prueba de XML
-        /*CharacterPosition cp = new CharacterPosition("Prueba", 123123123, Vector3.right);
-        XmlSerializer serializer = new XmlSerializer(typeof(CharacterPosition));
-        using (FileStream stream = new FileStream("exampleXML.xml", FileMode.Create))
-        {
-            serializer.Serialize(stream, cp);
-        }
-        PlayerPrefs.SetString("nombre", "MaxUser");
-        Debug.Log(PlayerPrefs.GetString("nombre"));*/
     }
 
     // Update is called once per frame
@@ -42,9 +32,11 @@ public class DataManager : MonoBehaviour
             prevTime += logInterval;
             CharacterPosition cp = new CharacterPosition(player.name, currentTime, player.transform.position);
             playerPos.positions.Add(cp);
+            DBManager.Instance.SavePosition(cp); //Guardar en la db la posicion
             foreach (GameObject enemy in enemies) {
                 CharacterPosition en = new CharacterPosition(enemy.name, currentTime, enemy.transform.position);
                 enemyPos.positions.Add(en);
+                DBManager.Instance.SavePosition(cp);//Guardar en la db la posicion
             }
         }
         if(currentTime > prevSaveTime + logSaveInterval) {
